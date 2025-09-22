@@ -35,7 +35,7 @@
 ### 1. プロジェクト初期セットアップ
 
 #### 1.1 開発環境構築
-- [ ] Node.js 18以上のインストール確認
+- [x] Node.js 18以上のインストール確認 ✅ Node.js 22.19.0 (mise)
 - [ ] TypeScript開発環境のセットアップ
 - [ ] package.json作成と必要な依存関係のインストール
   - `@modelcontextprotocol/sdk`

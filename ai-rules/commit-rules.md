@@ -39,6 +39,13 @@ await mcp__github__create_pull_request({
 
 ## Commit Rules
 
+### Granular Commit Strategy
+
+- **Commit frequently and in small increments**
+- Each logical change should be committed separately
+- Avoid bundling multiple unrelated changes in a single commit
+- This makes code review easier and helps track changes more effectively
+
 ### Format Specification
 
 - Commit messages should follow the type: subject format, with optional body and footer.
