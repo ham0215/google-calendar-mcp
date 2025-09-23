@@ -44,7 +44,7 @@ export function getConfig(): AppConfig {
     google: {
       clientId,
       clientSecret,
-      redirectUri: process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3901/oauth/callback',
+      redirectUri: process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/oauth/callback',
       scopes: [
         'https://www.googleapis.com/auth/calendar.readonly',
         'https://www.googleapis.com/auth/calendar.events.readonly',

@@ -72,7 +72,7 @@
 
 #### 2.2 OAuth認証情報作成
 - [ ] OAuth 2.0クライアントIDの作成
-- [ ] リダイレクトURI設定（http://localhost:3901/oauth/callback）
+- [ ] リダイレクトURI設定（http://localhost:3000/oauth/callback）
 - [ ] クライアントID/シークレットの取得
 - [ ] .envファイルへの認証情報設定
 

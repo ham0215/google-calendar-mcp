@@ -156,10 +156,10 @@ Google Calendar MCP ServerはModel Context Protocol (MCP)を使用して、Googl
 # Google OAuth設定
 GOOGLE_CLIENT_ID=your-client-id
 GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:3901/oauth/callback
+GOOGLE_REDIRECT_URI=http://localhost:3000/oauth/callback
 
 # MCP Server設定
-MCP_SERVER_PORT=3901
+MCP_SERVER_PORT=3000
 
 # フィルタリング設定
 EXCLUDE_KEYWORDS=個人,プライベート,休暇,有給,病院
