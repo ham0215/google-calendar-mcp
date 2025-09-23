@@ -1,15 +1,27 @@
 # Dependencies
 node_modules/
-vendor/
+.pnp
+.pnp.js
 
-# Environment variables
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Environment files
 .env
 .env.local
 .env.*.local
 
-*.local.json
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
-# IDE and editor files
+# IDE
 .vscode/
 .idea/
 *.swp
@@ -17,13 +29,24 @@ vendor/
 *~
 .DS_Store
 
-# Build outputs
-dist/
-build/
-out/
-*.log
+# Testing
+coverage/
+.nyc_output/
+
+# Tokens and credentials
+tokens/
+*.token.json
+credentials.json
+client_secret*.json
 
 # Temporary files
 tmp/
 temp/
-*.tmp
+.tmp/
+
+# OS files
+Thumbs.db
+
+# Package manager
+package-lock.json.backup
+yarn.lock.backup
