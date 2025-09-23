@@ -160,7 +160,7 @@ export class CalendarAPIError extends Error {
   constructor(
     message: string,
     public code?: number,
-    public details?: unknown
+    public details?: object
   ) {
     super(message);
     this.name = 'CalendarAPIError';
@@ -186,7 +186,9 @@ export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
 
-export type AsyncFunction<T = unknown> = (...args: unknown[]) => Promise<T>;
+export type AsyncFunction<T = void, Args extends ReadonlyArray<unknown> = []> = (
+  ...args: Args
+) => Promise<T>;
 
 export type Nullable<T> = T | null;
 

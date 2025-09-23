@@ -1,4 +1,4 @@
-import { OAuth2Client, CodeChallengeMethod } from 'google-auth-library';
+import { OAuth2Client, CodeChallengeMethod, Credentials } from 'google-auth-library';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import crypto from 'crypto';
@@ -148,26 +148,24 @@ export class OAuthManager {
     });
   }
 
-  async getTokensFromCode(code: string): Promise<Record<string, unknown>> {
+  async getTokensFromCode(code: string): Promise<Credentials> {
     const { tokens } = await this.oauth2Client.getToken({
       code,
       codeVerifier: this.codeVerifier,
     });
 
     this.oauth2Client.setCredentials(tokens);
-    return tokens as Record<string, unknown>;
+    return tokens;
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<Record<string, unknown>> {
+  async refreshAccessToken(refreshToken: string): Promise<Credentials> {
     this.oauth2Client.setCredentials({ refresh_token: refreshToken });
     const { credentials } = await this.oauth2Client.refreshAccessToken();
-    return credentials as Record<string, unknown>;
+    return credentials;
   }
 
-  setCredentials(tokens: Record<string, unknown>): void {
-    this.oauth2Client.setCredentials(
-      tokens as Parameters<typeof this.oauth2Client.setCredentials>[0]
-    );
+  setCredentials(tokens: Credentials): void {
+    this.oauth2Client.setCredentials(tokens);
   }
 
   getClient(): OAuth2Client {

@@ -105,16 +105,16 @@ export class CalendarClient {
   private async makeApiRequest<T>(requestFn: () => Promise<T>, retries = 3): Promise<T> {
     await this.ensureInitialized();
 
-    let lastError: unknown;
+    let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         return await requestFn();
       } catch (error) {
-        lastError = error;
+        lastError = error instanceof Error ? error : new Error(String(error));
 
         // Handle specific error cases
-        const errorCode = (error as { code?: number }).code;
+        const errorCode = (error as NodeJS.ErrnoException & { code?: number }).code;
         if (errorCode === 401) {
           // Token expired or invalid - try to refresh
           console.log('Authentication error - attempting to refresh tokens...');
@@ -130,9 +130,11 @@ export class CalendarClient {
         if (errorCode === 429) {
           // Rate limit exceeded - wait and retry
           const retryAfter =
-            (error as { response?: { headers?: { 'retry-after'?: number } } }).response?.headers?.[
-              'retry-after'
-            ] || attempt * 2;
+            (
+              error as NodeJS.ErrnoException & {
+                response?: { headers?: { 'retry-after'?: number } };
+              }
+            ).response?.headers?.['retry-after'] || attempt * 2;
           console.log(`Rate limit exceeded. Waiting ${retryAfter} seconds...`);
           await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
           continue;
@@ -151,8 +153,7 @@ export class CalendarClient {
       }
     }
 
-    const errorMessage = lastError instanceof Error ? lastError.message : String(lastError);
-    throw new Error(`Failed after ${retries} attempts: ${errorMessage}`);
+    throw new Error(`Failed after ${retries} attempts: ${lastError?.message || 'Unknown error'}`);
   }
 
   /**

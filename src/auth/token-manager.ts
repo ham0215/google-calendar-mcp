@@ -1,8 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { OAuthManager } from './oauth.js';
+import { Credentials } from 'google-auth-library';
 
-export interface TokenData {
+export interface TokenData extends Credentials {
   access_token: string;
   refresh_token?: string;
   scope: string;
@@ -72,10 +73,12 @@ export class TokenManager {
         const refreshedTokens = await this.oauthManager.refreshAccessToken(tokens.refresh_token);
 
         const updatedTokens: TokenData = {
-          ...tokens,
-          ...refreshedTokens,
-          refresh_token:
-            (refreshedTokens.refresh_token as string | undefined) || tokens.refresh_token,
+          access_token: refreshedTokens.access_token || tokens.access_token,
+          scope: refreshedTokens.scope || tokens.scope,
+          token_type: refreshedTokens.token_type || tokens.token_type,
+          expiry_date: refreshedTokens.expiry_date || tokens.expiry_date,
+          refresh_token: refreshedTokens.refresh_token || tokens.refresh_token,
+          id_token: refreshedTokens.id_token,
         };
 
         await this.saveTokens(updatedTokens);
@@ -94,7 +97,7 @@ export class TokenManager {
     const existingTokens = await this.getValidTokens();
 
     if (existingTokens) {
-      this.oauthManager.setCredentials(existingTokens as unknown as Record<string, unknown>);
+      this.oauthManager.setCredentials(existingTokens);
       return existingTokens;
     }
 
@@ -110,7 +113,13 @@ export class TokenManager {
     console.log('Authorization code received. Exchanging for tokens...');
 
     const tokens = await this.oauthManager.getTokensFromCode(authCode);
-    const tokenData = tokens as unknown as TokenData;
+    const tokenData: TokenData = {
+      access_token: tokens.access_token || '',
+      scope: tokens.scope || '',
+      token_type: tokens.token_type || 'Bearer',
+      expiry_date: tokens.expiry_date || Date.now() + 3600 * 1000,
+      refresh_token: tokens.refresh_token || undefined,
+    };
     await this.saveTokens(tokenData);
 
     console.log('Authentication successful! Tokens saved.');
@@ -119,6 +128,6 @@ export class TokenManager {
 
   async ensureAuthenticated(): Promise<void> {
     const tokens = await this.authenticate();
-    this.oauthManager.setCredentials(tokens as unknown as Record<string, unknown>);
+    this.oauthManager.setCredentials(tokens);
   }
 }
