@@ -74,7 +74,8 @@ export class TokenManager {
         const updatedTokens: TokenData = {
           ...tokens,
           ...refreshedTokens,
-          refresh_token: (refreshedTokens.refresh_token as string | undefined) || tokens.refresh_token,
+          refresh_token:
+            (refreshedTokens.refresh_token as string | undefined) || tokens.refresh_token,
         };
 
         await this.saveTokens(updatedTokens);

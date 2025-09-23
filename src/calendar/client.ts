@@ -114,7 +114,7 @@ export class CalendarClient {
         lastError = error;
 
         // Handle specific error cases
-        const errorCode = (error as {code?: number}).code;
+        const errorCode = (error as { code?: number }).code;
         if (errorCode === 401) {
           // Token expired or invalid - try to refresh
           console.log('Authentication error - attempting to refresh tokens...');
@@ -129,7 +129,10 @@ export class CalendarClient {
 
         if (errorCode === 429) {
           // Rate limit exceeded - wait and retry
-          const retryAfter = (error as {response?: {headers?: {'retry-after'?: number}}}).response?.headers?.['retry-after'] || attempt * 2;
+          const retryAfter =
+            (error as { response?: { headers?: { 'retry-after'?: number } } }).response?.headers?.[
+              'retry-after'
+            ] || attempt * 2;
           console.log(`Rate limit exceeded. Waiting ${retryAfter} seconds...`);
           await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
           continue;

@@ -165,7 +165,9 @@ export class OAuthManager {
   }
 
   setCredentials(tokens: Record<string, unknown>): void {
-    this.oauth2Client.setCredentials(tokens as Parameters<typeof this.oauth2Client.setCredentials>[0]);
+    this.oauth2Client.setCredentials(
+      tokens as Parameters<typeof this.oauth2Client.setCredentials>[0]
+    );
   }
 
   getClient(): OAuth2Client {
