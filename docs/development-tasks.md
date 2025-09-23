@@ -36,29 +36,29 @@
 
 #### 1.1 開発環境構築
 - [x] Node.js 18以上のインストール確認 ✅ Node.js 22.19.0 (mise)
-- [ ] TypeScript開発環境のセットアップ
-- [ ] package.json作成と必要な依存関係のインストール
-  - `@modelcontextprotocol/sdk`
-  - `googleapis`
-  - `google-auth-library`
-  - `dotenv`
-  - `typescript`
-  - `tsx`
+- [x] TypeScript開発環境のセットアップ ✅
+- [x] package.json作成と必要な依存関係のインストール ✅
+  - `@modelcontextprotocol/sdk` (1.18.1)
+  - `googleapis` (144.0.0)
+  - `google-auth-library` (9.14.1)
+  - `dotenv` (16.4.7)
+  - `typescript` (5.7.2)
+  - `tsx` (4.19.2)
   - 開発用依存関係（`@types/node`, `eslint`, `prettier`等）
-- [ ] tsconfig.json設定
-- [ ] .gitignoreファイル作成
-- [ ] .env.exampleファイル作成
+- [x] tsconfig.json設定 ✅
+- [x] .gitignoreファイル作成 ✅
+- [x] .env.exampleファイル作成 ✅
 
 #### 1.2 ディレクトリ構造作成
-- [ ] src/ディレクトリ構造の作成
-  - [ ] index.ts作成
-  - [ ] auth/ディレクトリ作成
-  - [ ] calendar/ディレクトリ作成
-  - [ ] tools/ディレクトリ作成
-  - [ ] config/ディレクトリ作成
-  - [ ] types/ディレクトリ作成
-- [ ] tests/ディレクトリ作成
-- [ ] dist/ディレクトリ設定（ビルド出力用）
+- [x] src/ディレクトリ構造の作成 ✅
+  - [x] index.ts作成 ✅
+  - [x] auth/ディレクトリ作成 ✅
+  - [x] calendar/ディレクトリ作成 ✅
+  - [x] tools/ディレクトリ作成 ✅
+  - [x] config/ディレクトリ作成 ✅
+  - [x] types/ディレクトリ作成 ✅
+- [x] tests/ディレクトリ作成 ✅
+- [x] dist/ディレクトリ設定（ビルド出力用）✅
 
 ### 2. Google Cloud Console設定
 
@@ -79,25 +79,25 @@
 ### 3. 認証システム実装
 
 #### 3.1 OAuth認証フロー実装（src/auth/oauth.ts）
-- [ ] 認証URLの生成機能
-  - [ ] PKCE実装（code_verifier/code_challenge生成）
-  - [ ] state生成（CSRF対策）
-- [ ] ローカルサーバー実装（リダイレクトURI用）
-  - [ ] HTTPサーバー起動
-  - [ ] コールバック処理
-  - [ ] 認証コード受信
-- [ ] アクセストークン取得処理
-- [ ] リフレッシュトークン取得処理
-- [ ] トークン自動更新メカニズム
+- [x] 認証URLの生成機能 ✅
+  - [x] PKCE実装（code_verifier/code_challenge生成） ✅
+  - [x] state生成（CSRF対策） ✅
+- [x] ローカルサーバー実装（リダイレクトURI用） ✅
+  - [x] HTTPサーバー起動 ✅
+  - [x] コールバック処理 ✅
+  - [x] 認証コード受信 ✅
+- [x] アクセストークン取得処理 ✅
+- [x] リフレッシュトークン取得処理 ✅
+- [x] トークン自動更新メカニズム ✅
 
 #### 3.2 トークン管理（src/auth/token-manager.ts）
-- [ ] トークン保存機能
-  - [ ] ローカルファイルへの保存
+- [x] トークン保存機能 ✅
+  - [x] ローカルファイルへの保存 ✅
   - [ ] 暗号化実装（オプション）
-- [ ] トークン読み込み機能
-- [ ] トークン有効性チェック
-- [ ] トークンリフレッシュ機能
-- [ ] トークンファイルパス管理
+- [x] トークン読み込み機能 ✅
+- [x] トークン有効性チェック ✅
+- [x] トークンリフレッシュ機能 ✅
+- [x] トークンファイルパス管理 ✅
 
 ### 4. Google Calendar API統合
 
