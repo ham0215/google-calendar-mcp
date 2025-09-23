@@ -1,276 +1,351 @@
 # Google Calendar MCP Server
 
-A Model Context Protocol (MCP) server that provides intelligent access to Google Calendar data with advanced filtering capabilities for meetings and events.
+Google CalendarをMCP（Model Context Protocol）経由でAIアシスタントに接続するためのサーバーです。会議の自動検出、インテリジェントなフィルタリング、そして効率的なスケジュール管理を実現します。
 
-## Features
+## 概要
 
-- 📅 **Smart Meeting Detection**: Automatically filters for actual meetings (2+ participants)
-- 🎯 **Intelligent Filtering**: Excludes declined events, all-day events, and non-meeting calendar items
-- 🔐 **Secure OAuth 2.0**: Uses Google's OAuth 2.0 with PKCE for secure authentication
-- ⏰ **Timezone Support**: Full timezone-aware event handling
-- 🔄 **Auto Token Refresh**: Automatically refreshes expired access tokens
-- 🎛️ **Configurable Filters**: Customizable keyword exclusion and attendee requirements
+このMCPサーバーを使用することで、ClaudeなどのAIアシスタントがGoogle Calendarのデータに安全にアクセスし、今日の会議情報を取得したり、スケジュールを分析したりすることができます。特に、実際のミーティング（2名以上の参加者がいる予定）を自動的に識別し、関連性の低いイベントをフィルタリングする機能が特徴です。
 
-## Prerequisites
+## 主な機能
 
-- Node.js 18 or higher
-- A Google Cloud Console project with Calendar API enabled
-- Google OAuth 2.0 credentials (Client ID and Client Secret)
+- 📅 **スマートな会議検出**: 2名以上の参加者がいる実際の会議を自動識別
+- 🎯 **インテリジェントフィルタリング**: 欠席予定、終日イベント、非会議アイテムを自動除外
+- 🔐 **セキュアな認証**: PKCEを使用したOAuth 2.0による安全な認証
+- ⏰ **タイムゾーン対応**: 完全なタイムゾーン対応のイベント処理
+- 🔄 **自動トークン更新**: 期限切れアクセストークンの自動更新
+- 🎛️ **カスタマイズ可能なフィルタ**: キーワード除外や参加者要件のカスタマイズ
+- 🤖 **AI統合**: Claude、ChatGPTなどのAIアシスタントとの簡単な統合
 
-## Installation
+## 使用シナリオ
 
-1. Clone the repository:
+このMCPサーバーは以下のようなシナリオで活用できます：
+
+- **AIアシスタントによる会議準備**: 「今日の会議を教えて」と聞くだけで、AIが関連する会議情報を取得
+- **議事録の自動作成**: 会議情報を基にAIが議事録テンプレートを準備
+- **スケジュール分析**: 会議の傾向や時間配分をAIが分析
+- **リマインダー生成**: 重要な会議の前にAIが準備事項をリマインド
+
+## 前提条件
+
+- Node.js 18以上
+- Google Cloud Consoleプロジェクト（Calendar API有効化済み）
+- Google OAuth 2.0認証情報（Client IDとClient Secret）
+
+## インストール
+
+### 1. リポジトリのクローン
+
 ```bash
 git clone https://github.com/ham0215/google-calendar-mcp.git
 cd google-calendar-mcp
 ```
 
-2. Install dependencies:
+### 2. 依存関係のインストール
+
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+### 3. 環境変数の設定
+
 ```bash
 cp .env.example .env
 ```
 
-4. Edit `.env` and add your Google OAuth credentials:
+### 4. `.env`ファイルの編集
+
 ```env
+# 必須: Google OAuth認証情報
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_REDIRECT_URI=http://localhost:3000/oauth/callback
 
-# Optional configuration
-DEFAULT_TIMEZONE=Asia/Tokyo
-MIN_ATTENDEES=2
-EXCLUDE_KEYWORDS=vacation,holiday,pto,ooo
+# オプション: カスタマイズ設定
+DEFAULT_TIMEZONE=Asia/Tokyo        # デフォルトのタイムゾーン
+MIN_ATTENDEES=2                   # 会議と判定する最小参加者数
+EXCLUDE_KEYWORDS=vacation,holiday,pto,ooo  # 除外するキーワード
 ```
 
-## Google Cloud Console Setup
+## Google Cloud Consoleの設定
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Enable the Google Calendar API:
-   - Go to "APIs & Services" > "Enable APIs and Services"
-   - Search for "Google Calendar API"
-   - Click "Enable"
-4. Create OAuth 2.0 credentials:
-   - Go to "APIs & Services" > "Credentials"
-   - Click "Create Credentials" > "OAuth client ID"
-   - Choose "Web application"
-   - Add `http://localhost:3000/oauth/callback` to Authorized redirect URIs
-   - Save the Client ID and Client Secret
+### 1. プロジェクトの作成
 
-## Usage
+[Google Cloud Console](https://console.cloud.google.com/)にアクセスし、新規プロジェクトを作成または既存のプロジェクトを選択
 
-### Building the Server
+### 2. Google Calendar APIの有効化
+
+1. 「APIとサービス」→「APIとサービスの有効化」を選択
+2. 「Google Calendar API」を検索
+3. 「有効にする」をクリック
+
+### 3. OAuth 2.0認証情報の作成
+
+1. 「APIとサービス」→「認証情報」を選択
+2. 「認証情報を作成」→「OAuth クライアント ID」をクリック
+3. アプリケーションの種類で「ウェブアプリケーション」を選択
+4. 承認済みのリダイレクトURIに以下を追加：
+   ```
+   http://localhost:3000/oauth/callback
+   ```
+5. クライアントIDとクライアントシークレットを保存
+
+## 使用方法
+
+### サーバーのビルド
 
 ```bash
 npm run build
 ```
 
-### Running the Server
+### サーバーの起動
 
-For development:
+開発環境での起動:
 ```bash
 npm run dev
 ```
 
-For production:
+本番環境での起動:
 ```bash
 npm run start
 ```
 
-### Authentication
+### 初回認証
 
-On first run, the server will:
-1. Display an authentication URL in the console
-2. Open a local server on port 3000 to receive the OAuth callback
-3. Save the tokens locally for future use
+初回起動時は以下の手順で認証を行います：
 
-### MCP Integration
+1. コンソールに認証URLが表示される
+2. URLをブラウザで開き、Googleアカウントでログイン
+3. カレンダーへのアクセスを許可
+4. 自動的にトークンが保存され、次回以降は自動ログイン
 
-To use with an MCP client, configure it to connect to this server:
+### Claude Desktopとの統合
+
+Claude Desktop アプリケーションで使用する場合、`claude_desktop_config.json`に以下を追加：
 
 ```json
 {
   "mcpServers": {
     "google-calendar": {
       "command": "node",
-      "args": ["path/to/google-calendar-mcp/dist/index.js"],
+      "args": ["/absolute/path/to/google-calendar-mcp/dist/index.js"],
       "env": {
-        "GOOGLE_CLIENT_ID": "your-client-id",
-        "GOOGLE_CLIENT_SECRET": "your-client-secret"
+        "GOOGLE_CLIENT_ID": "your-client-id.apps.googleusercontent.com",
+        "GOOGLE_CLIENT_SECRET": "your-client-secret",
+        "DEFAULT_TIMEZONE": "Asia/Tokyo"
       }
     }
   }
 }
 ```
 
-## Available Tools
+設定ファイルの場所:
+- Mac: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+## 利用可能なツール
 
 ### getTodayMeetings
 
-Retrieves today's meetings with intelligent filtering.
+今日の会議をインテリジェントなフィルタリングで取得します。
 
-**Parameters:**
-- `timezone` (string, optional): Timezone for the query (default: "UTC")
-- `includeDeclined` (boolean, optional): Include declined meetings (default: false)
-- `minAttendees` (number, optional): Minimum number of attendees (default: 2)
-- `excludeKeywords` (string[], optional): Keywords to exclude from titles/descriptions
+**パラメータ:**
+- `timezone` (文字列, オプション): タイムゾーン（デフォルト: "UTC"、日本の場合: "Asia/Tokyo"）
+- `includeDeclined` (真偽値, オプション): 欠席予定の会議を含める（デフォルト: false）
+- `minAttendees` (数値, オプション): 最小参加者数（デフォルト: 2）
+- `excludeKeywords` (文字列配列, オプション): タイトル/説明から除外するキーワード
 
-**Response:**
+**使用例（Claude内）:**
+```
+今日の会議を教えて
+タイムゾーンをAsia/Tokyoで今日の予定を確認して
+2人以上参加する会議だけを表示して
+```
+
+**レスポンス例:**
 ```json
 {
   "meetings": [
     {
       "id": "event-id",
-      "title": "Team Standup",
-      "startTime": "2024-01-20T10:00:00Z",
-      "endTime": "2024-01-20T10:30:00Z",
+      "title": "チーム定例会議",
+      "startTime": "2024-01-20T10:00:00+09:00",
+      "endTime": "2024-01-20T10:30:00+09:00",
       "duration": 30,
       "attendees": [
         {
           "email": "user@example.com",
-          "name": "John Doe",
+          "name": "山田太郎",
           "responseStatus": "accepted",
           "isOrganizer": true
+        },
+        {
+          "email": "colleague@example.com",
+          "name": "鈴木花子",
+          "responseStatus": "accepted",
+          "isOrganizer": false
         }
       ],
-      "location": "Conference Room A",
+      "location": "会議室A",
       "meetingLink": "https://meet.google.com/abc-defg-hij",
-      "description": "Daily team sync",
+      "description": "週次進捗確認",
       "isAccepted": true,
-      "isOrganizer": false
+      "isOrganizer": true
     }
   ],
-  "timezone": "UTC",
+  "timezone": "Asia/Tokyo",
   "date": "2024-01-20"
 }
 ```
 
-## Configuration
+## 設定
 
-### Environment Variables
+### 環境変数
 
-| Variable | Description | Default |
+| 変数名 | 説明 | デフォルト値 |
 |----------|-------------|---------|
-| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | Required |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | Required |
-| `GOOGLE_REDIRECT_URI` | OAuth redirect URI | `http://localhost:3000/oauth/callback` |
-| `DEFAULT_TIMEZONE` | Default timezone for queries | `UTC` |
-| `DEFAULT_CALENDAR_ID` | Default calendar to query | `primary` |
-| `MIN_ATTENDEES` | Minimum attendees for meetings | `2` |
-| `EXCLUDE_KEYWORDS` | Comma-separated keywords to exclude | See defaults below |
-| `REQUIRE_ACCEPTED` | Only show accepted meetings | `true` |
-| `EXCLUDE_DECLINED` | Exclude declined meetings | `true` |
-| `EXCLUDE_ALL_DAY` | Exclude all-day events | `true` |
-| `TOKEN_DIR` | Directory for token storage | `~/.google-calendar-mcp` |
+| `GOOGLE_CLIENT_ID` | Google OAuth クライアントID | 必須 |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth クライアントシークレット | 必須 |
+| `GOOGLE_REDIRECT_URI` | OAuth リダイレクトURI | `http://localhost:3000/oauth/callback` |
+| `DEFAULT_TIMEZONE` | デフォルトのタイムゾーン | `UTC` |
+| `DEFAULT_CALENDAR_ID` | デフォルトのカレンダーID | `primary` |
+| `MIN_ATTENDEES` | 会議と判定する最小参加者数 | `2` |
+| `EXCLUDE_KEYWORDS` | 除外するキーワード（カンマ区切り） | 下記参照 |
+| `REQUIRE_ACCEPTED` | 承諾済みの会議のみ表示 | `true` |
+| `EXCLUDE_DECLINED` | 欠席予定の会議を除外 | `true` |
+| `EXCLUDE_ALL_DAY` | 終日イベントを除外 | `true` |
+| `TOKEN_DIR` | トークン保存ディレクトリ | `~/.google-calendar-mcp` |
 
-### Default Excluded Keywords
+### デフォルトの除外キーワード
 
-The following keywords are excluded by default (case-insensitive):
-- out of office, ooo
-- vacation, holiday, pto
-- blocked, busy, hold
-- tentative, focus time
-- lunch, break
+以下のキーワードを含むイベントは自動的に除外されます（大文字小文字を区別しない）:
+- out of office, ooo（不在）
+- vacation, holiday, pto（休暇関連）
+- blocked, busy, hold（予定確保）
+- tentative, focus time（仮予定、集中時間）
+- lunch, break（休憩時間）
 
-## Development
+## 開発
 
-### Available Scripts
+### 利用可能なスクリプト
 
 ```bash
-# Development with hot reload
+# 開発環境（ホットリロード付き）
 npm run dev
 
-# Build TypeScript
+# TypeScriptのビルド
 npm run build
 
-# Run type checking
+# 型チェック
 npm run typecheck
 
-# Run linter
+# リンターの実行
 npm run lint
 
-# Format code
+# コードフォーマット
 npm run format
 
-# Run all checks
+# すべてのチェックを実行
 npm run check
 
-# Clean build directory
+# ビルドディレクトリのクリーン
 npm run clean
+
+# 認証のセットアップ（開発時）
+npm run auth
 ```
 
-### Project Structure
+### プロジェクト構成
 
 ```
 google-calendar-mcp/
 ├── src/
-│   ├── index.ts           # MCP server entry point
-│   ├── auth/              # OAuth and token management
-│   │   ├── oauth.ts       # OAuth flow implementation
-│   │   └── token-manager.ts # Token storage and refresh
-│   ├── calendar/          # Calendar API integration
-│   │   ├── client.ts      # Google Calendar API client
-│   │   └── filters.ts     # Event filtering logic
-│   ├── config/            # Configuration management
-│   │   └── settings.ts    # Environment configuration
-│   ├── tools/             # MCP tool implementations
-│   │   └── get-meetings.ts # getTodayMeetings tool
-│   └── types/             # TypeScript type definitions
-│       └── index.ts       # Shared type definitions
-├── dist/                  # Compiled JavaScript output
-├── tests/                 # Test files
-├── .env.example          # Environment variables template
-├── tsconfig.json         # TypeScript configuration
-└── package.json          # Project dependencies
+│   ├── index.ts           # MCPサーバーのエントリーポイント
+│   ├── auth/              # OAuth認証とトークン管理
+│   │   ├── oauth.ts       # OAuth認証フロー実装
+│   │   └── token-manager.ts # トークンの保存と更新
+│   ├── calendar/          # Calendar API統合
+│   │   ├── client.ts      # Google Calendar APIクライアント
+│   │   └── filters.ts     # イベントフィルタリングロジック
+│   ├── config/            # 設定管理
+│   │   └── settings.ts    # 環境設定
+│   ├── tools/             # MCPツール実装
+│   │   └── get-meetings.ts # getTodayMeetingsツール
+│   └── types/             # TypeScript型定義
+│       └── index.ts       # 共通型定義
+├── dist/                  # コンパイル済みJavaScript
+├── docs/                  # ドキュメント
+│   └── development-tasks.md # 開発タスクリスト
+├── tests/                 # テストファイル
+├── .env.example          # 環境変数テンプレート
+├── tsconfig.json         # TypeScript設定
+└── package.json          # プロジェクト依存関係
 ```
 
-## Troubleshooting
+## トラブルシューティング
 
-### Authentication Issues
+### 認証エラーの対処
 
-If you encounter authentication problems:
-1. Delete the token file: `rm ~/.google-calendar-mcp/tokens.json`
-2. Restart the server to re-authenticate
-3. Ensure your OAuth client is properly configured in Google Cloud Console
+認証に問題が発生した場合:
+1. トークンファイルを削除: `rm ~/.google-calendar-mcp/tokens.json`
+2. サーバーを再起動して再認証
+3. Google Cloud ConsoleでOAuthクライアントが正しく設定されているか確認
 
-### Token Expiration
+### トークンの有効期限
 
-The server automatically refreshes expired tokens. If refresh fails:
-- Tokens older than 6 months require re-authentication
-- Check that your Google Cloud project is still active
+サーバーは自動的に期限切れトークンを更新しますが、以下の場合は再認証が必要:
+- 6ヶ月以上経過したトークン
+- Google Cloudプロジェクトが無効化されている場合
 
-### API Limits
+### API制限
 
-Google Calendar API has rate limits. The server implements:
-- Automatic retry with exponential backoff
-- Rate limit detection and waiting
-- Proper error handling for quota exceeded
+Google Calendar APIには利用制限があります。本サーバーは以下の対策を実装:
+- エクスポネンシャルバックオフによる自動リトライ
+- レート制限の検出と待機
+- クォータ超過時の適切なエラーハンドリング
 
-## Security
+### よくある質問
 
-- OAuth tokens are stored locally in the user's home directory
-- Uses PKCE (Proof Key for Code Exchange) for enhanced security
-- Implements state validation to prevent CSRF attacks
-- Never commits credentials to version control
+**Q: 「今日の会議」が表示されない**
+- A: タイムゾーンが正しく設定されているか確認してください。日本の場合は`DEFAULT_TIMEZONE=Asia/Tokyo`を設定します。
 
-## Contributing
+**Q: 特定のイベントが除外される**
+- A: 除外キーワードを確認してください。`EXCLUDE_KEYWORDS`環境変数でカスタマイズ可能です。
 
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+**Q: 認証URLにアクセスできない**
+- A: ポート3000が他のアプリケーションで使用されていないか確認してください。
 
-## License
+## セキュリティ
 
-MIT License - see [LICENSE](LICENSE) file for details
+- OAuthトークンはユーザーのホームディレクトリにローカル保存
+- PKCE（Proof Key for Code Exchange）による強化されたセキュリティ
+- CSRF攻撃を防ぐためのstate検証を実装
+- 認証情報はバージョン管理にコミットしない
 
-## Support
+## Findyでの活用
 
-For issues, questions, or suggestions, please open an issue on GitHub.
+このMCPサーバーは、Findyでの以下の業務で活用されています:
+
+- **議事録の自動作成**: 会議情報を基にNotionに議事録テンプレートを作成
+- **会議準備の効率化**: AIが関連資料や過去の議事録を自動収集
+- **スケジュール分析**: 会議時間の配分や参加率の分析
+
+関連プロジェクト:
+- [meeting-minutes-creator](https://github.com/ham0215/meeting-minutes-creator): 議事録自動作成エージェント
+
+## コントリビューション
+
+貢献を歓迎します！以下の手順でお願いします:
+
+1. リポジトリをフォーク
+2. フィーチャーブランチを作成
+3. 変更を実装
+4. テストを追加（必要に応じて）
+5. プルリクエストを送信
+
+## ライセンス
+
+MIT License - 詳細は[LICENSE](LICENSE)ファイルを参照
+
+## サポート
+
+問題、質問、提案がある場合は、GitHubでIssueを作成してください。
