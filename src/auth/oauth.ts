@@ -139,7 +139,7 @@ export class OAuthManager {
         }
       });
 
-      const port = new URL(this.config.redirectUri).port || 3000;
+      const port = new URL(this.config.redirectUri).port || 3901;
       this.server.listen(port, () => {
         console.log(`OAuth callback server listening on port ${port}`);
       });

@@ -58,7 +58,7 @@ cp .env.example .env
 # 必須: Google OAuth認証情報
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:3000/oauth/callback
+GOOGLE_REDIRECT_URI=http://localhost:3901/oauth/callback
 
 # オプション: カスタマイズ設定
 DEFAULT_TIMEZONE=Asia/Tokyo        # デフォルトのタイムゾーン
@@ -85,7 +85,7 @@ EXCLUDE_KEYWORDS=vacation,holiday,pto,ooo  # 除外するキーワード
 3. アプリケーションの種類で「ウェブアプリケーション」を選択
 4. 承認済みのリダイレクトURIに以下を追加：
    ```
-   http://localhost:3000/oauth/callback
+   http://localhost:3901/oauth/callback
    ```
 5. クライアントIDとクライアントシークレットを保存
 
@@ -205,7 +205,7 @@ Claude Desktop アプリケーションで使用する場合、`claude_desktop_c
 |----------|-------------|---------|
 | `GOOGLE_CLIENT_ID` | Google OAuth クライアントID | 必須 |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth クライアントシークレット | 必須 |
-| `GOOGLE_REDIRECT_URI` | OAuth リダイレクトURI | `http://localhost:3000/oauth/callback` |
+| `GOOGLE_REDIRECT_URI` | OAuth リダイレクトURI | `http://localhost:3901/oauth/callback` |
 | `DEFAULT_TIMEZONE` | デフォルトのタイムゾーン | `UTC` |
 | `DEFAULT_CALENDAR_ID` | デフォルトのカレンダーID | `primary` |
 | `MIN_ATTENDEES` | 会議と判定する最小参加者数 | `2` |
@@ -312,7 +312,7 @@ Google Calendar APIには利用制限があります。本サーバーは以下�
 - A: 除外キーワードを確認してください。`EXCLUDE_KEYWORDS`環境変数でカスタマイズ可能です。
 
 **Q: 認証URLにアクセスできない**
-- A: ポート3000が他のアプリケーションで使用されていないか確認してください。
+- A: ポート3901が他のアプリケーションで使用されていないか確認してください。
 
 ## セキュリティ
 
