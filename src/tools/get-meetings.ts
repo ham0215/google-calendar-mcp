@@ -210,7 +210,14 @@ export function getTodayMeetingsTool() {
 /**
  * Execute the getTodayMeetings tool
  */
-export async function executeTodayMeetingsTool(args: any): Promise<{
+interface ToolArgs {
+  timezone?: string;
+  includeDeclined?: boolean;
+  minAttendees?: number;
+  excludeKeywords?: string[];
+}
+
+export async function executeTodayMeetingsTool(args: ToolArgs): Promise<{
   type: string;
   text: string;
 }> {

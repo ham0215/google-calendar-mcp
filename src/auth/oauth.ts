@@ -1,4 +1,4 @@
-import { OAuth2Client, CodeChallengeMethod } from 'google-auth-library';
+import { OAuth2Client, CodeChallengeMethod, Credentials } from 'google-auth-library';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import crypto from 'crypto';
@@ -13,7 +13,7 @@ export interface AuthConfig {
 export class OAuthManager {
   private oauth2Client: OAuth2Client;
   private config: AuthConfig;
-  private server: any;
+  private server: ReturnType<typeof createServer> | null = null;
   private codeVerifier?: string;
   private state?: string;
 
@@ -64,7 +64,12 @@ export class OAuthManager {
   async startAuthServer(): Promise<string> {
     return new Promise((resolve, reject) => {
       this.server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
-        const urlObj = new URL(req.url!, `http://${req.headers.host}`);
+        if (!req.url) {
+          res.writeHead(400, { 'Content-Type': 'text/plain' });
+          res.end('Bad Request');
+          return;
+        }
+        const urlObj = new URL(req.url, `http://${req.headers.host}`);
 
         if (urlObj.pathname === '/oauth/callback') {
           const code = urlObj.searchParams.get('code');
@@ -82,7 +87,7 @@ export class OAuthManager {
                 </body>
               </html>
             `);
-            this.server.close();
+            this.server?.close();
             reject(new Error(`Authentication failed: ${error}`));
             return;
           }
@@ -98,7 +103,7 @@ export class OAuthManager {
                 </body>
               </html>
             `);
-            this.server.close();
+            this.server?.close();
             reject(new Error('Invalid state parameter - possible CSRF attack'));
             return;
           }
@@ -114,7 +119,7 @@ export class OAuthManager {
                 </body>
               </html>
             `);
-            this.server.close();
+            this.server?.close();
             resolve(code);
           } else {
             res.writeHead(400, { 'Content-Type': 'text/html' });
@@ -127,7 +132,7 @@ export class OAuthManager {
                 </body>
               </html>
             `);
-            this.server.close();
+            this.server?.close();
             reject(new Error('No authorization code received'));
           }
         } else {
@@ -143,7 +148,7 @@ export class OAuthManager {
     });
   }
 
-  async getTokensFromCode(code: string): Promise<any> {
+  async getTokensFromCode(code: string): Promise<Credentials> {
     const { tokens } = await this.oauth2Client.getToken({
       code,
       codeVerifier: this.codeVerifier,
@@ -153,13 +158,13 @@ export class OAuthManager {
     return tokens;
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<any> {
+  async refreshAccessToken(refreshToken: string): Promise<Credentials> {
     this.oauth2Client.setCredentials({ refresh_token: refreshToken });
     const { credentials } = await this.oauth2Client.refreshAccessToken();
     return credentials;
   }
 
-  setCredentials(tokens: any): void {
+  setCredentials(tokens: Credentials): void {
     this.oauth2Client.setCredentials(tokens);
   }
 

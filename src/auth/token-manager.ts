@@ -1,8 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { OAuthManager } from './oauth.js';
+import { Credentials } from 'google-auth-library';
 
-export interface TokenData {
+export interface TokenData extends Credentials {
   access_token: string;
   refresh_token?: string;
   scope: string;
@@ -38,7 +39,7 @@ export class TokenManager {
       const data = await fs.readFile(this.tokenPath, 'utf8');
       return JSON.parse(data);
     } catch (error) {
-      if ((error as any).code === 'ENOENT') {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         return null;
       }
       throw error;
@@ -49,7 +50,7 @@ export class TokenManager {
     try {
       await fs.unlink(this.tokenPath);
     } catch (error) {
-      if ((error as any).code !== 'ENOENT') {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         throw error;
       }
     }
@@ -72,9 +73,12 @@ export class TokenManager {
         const refreshedTokens = await this.oauthManager.refreshAccessToken(tokens.refresh_token);
 
         const updatedTokens: TokenData = {
-          ...tokens,
-          ...refreshedTokens,
+          access_token: refreshedTokens.access_token || tokens.access_token,
+          scope: refreshedTokens.scope || tokens.scope,
+          token_type: refreshedTokens.token_type || tokens.token_type,
+          expiry_date: refreshedTokens.expiry_date || tokens.expiry_date,
           refresh_token: refreshedTokens.refresh_token || tokens.refresh_token,
+          id_token: refreshedTokens.id_token,
         };
 
         await this.saveTokens(updatedTokens);
@@ -109,10 +113,17 @@ export class TokenManager {
     console.log('Authorization code received. Exchanging for tokens...');
 
     const tokens = await this.oauthManager.getTokensFromCode(authCode);
-    await this.saveTokens(tokens);
+    const tokenData: TokenData = {
+      access_token: tokens.access_token || '',
+      scope: tokens.scope || '',
+      token_type: tokens.token_type || 'Bearer',
+      expiry_date: tokens.expiry_date || Date.now() + 3600 * 1000,
+      refresh_token: tokens.refresh_token || undefined,
+    };
+    await this.saveTokens(tokenData);
 
     console.log('Authentication successful! Tokens saved.');
-    return tokens;
+    return tokenData;
   }
 
   async ensureAuthenticated(): Promise<void> {
