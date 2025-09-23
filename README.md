@@ -58,13 +58,18 @@ cp .env.example .env
 # 必須: Google OAuth認証情報
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:3000/oauth/callback
+
+# オプション: ポート変更（デフォルト: 3000）
+# ポート3000が使用中の場合は、以下のように変更できます
+# GOOGLE_REDIRECT_URI=http://localhost:3901/oauth/callback
 
 # オプション: カスタマイズ設定
 DEFAULT_TIMEZONE=Asia/Tokyo        # デフォルトのタイムゾーン
 MIN_ATTENDEES=2                   # 会議と判定する最小参加者数
 EXCLUDE_KEYWORDS=vacation,holiday,pto,ooo  # 除外するキーワード
 ```
+
+**注意**: `.env`ファイルの代わりに、Claude Desktopの設定ファイルで環境変数を直接指定することも可能です（詳細は「Claude Desktopとの統合」セクションを参照）。
 
 ## Google Cloud Consoleの設定
 
@@ -120,7 +125,36 @@ npm run start
 
 ### Claude Desktopとの統合
 
-Claude Desktop アプリケーションで使用する場合、`claude_desktop_config.json`に以下を追加：
+Claude Desktop アプリケーションで使用する場合、以下の2つの方法で設定できます：
+
+#### 方法1: .envファイルを使用（推奨）
+
+プロジェクトルートに`.env`ファイルを作成し、環境変数を設定：
+
+```bash
+# .env ファイル
+GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-client-secret
+GOOGLE_REDIRECT_URI=http://localhost:3000/oauth/callback  # ポート変更時
+DEFAULT_TIMEZONE=Asia/Tokyo
+```
+
+`claude_desktop_config.json`にはパスのみ指定：
+
+```json
+{
+  "mcpServers": {
+    "google-calendar": {
+      "command": "node",
+      "args": ["/absolute/path/to/google-calendar-mcp/dist/index.js"]
+    }
+  }
+}
+```
+
+#### 方法2: 設定ファイルで直接指定
+
+`.env`ファイルを使用せず、`claude_desktop_config.json`に直接記述：
 
 ```json
 {
@@ -137,6 +171,10 @@ Claude Desktop アプリケーションで使用する場合、`claude_desktop_c
   }
 }
 ```
+
+**メリット比較:**
+- **方法1（.env）**: 認証情報を一箇所で管理、開発時と同じ設定を使用、Gitで管理されない
+- **方法2（直接指定）**: 設定が一つのファイルに集約、複数環境で異なる設定を使いやすい
 
 設定ファイルの場所:
 - Mac: `~/Library/Application Support/Claude/claude_desktop_config.json`
