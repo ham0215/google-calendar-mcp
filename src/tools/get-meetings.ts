@@ -210,16 +210,17 @@ export function getTodayMeetingsTool() {
 /**
  * Execute the getTodayMeetings tool
  */
-export async function executeTodayMeetingsTool(args: any): Promise<{
+export async function executeTodayMeetingsTool(args: unknown): Promise<{
   type: string;
   text: string;
 }> {
   try {
+    const argsObj = args as Record<string, unknown>;
     const params: GetTodayMeetingsParams = {
-      timezone: args.timezone,
-      includeDeclined: args.includeDeclined,
-      minAttendees: args.minAttendees,
-      excludeKeywords: args.excludeKeywords,
+      timezone: argsObj.timezone as string | undefined,
+      includeDeclined: argsObj.includeDeclined as boolean | undefined,
+      minAttendees: argsObj.minAttendees as number | undefined,
+      excludeKeywords: argsObj.excludeKeywords as string[] | undefined,
     };
 
     const result = await getTodayMeetings(params);

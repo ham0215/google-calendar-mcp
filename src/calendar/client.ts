@@ -105,36 +105,37 @@ export class CalendarClient {
   private async makeApiRequest<T>(requestFn: () => Promise<T>, retries = 3): Promise<T> {
     await this.ensureInitialized();
 
-    let lastError: any;
+    let lastError: unknown;
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         return await requestFn();
-      } catch (error: any) {
+      } catch (error) {
         lastError = error;
 
         // Handle specific error cases
-        if (error.code === 401) {
+        const errorCode = (error as {code?: number}).code;
+        if (errorCode === 401) {
           // Token expired or invalid - try to refresh
           console.log('Authentication error - attempting to refresh tokens...');
           await this.tokenManager.ensureAuthenticated();
           continue;
         }
 
-        if (error.code === 403) {
+        if (errorCode === 403) {
           // Permission denied
           throw new Error('Permission denied. Please check your Google Calendar permissions.');
         }
 
-        if (error.code === 429) {
+        if (errorCode === 429) {
           // Rate limit exceeded - wait and retry
-          const retryAfter = error.response?.headers?.['retry-after'] || attempt * 2;
+          const retryAfter = (error as {response?: {headers?: {'retry-after'?: number}}}).response?.headers?.['retry-after'] || attempt * 2;
           console.log(`Rate limit exceeded. Waiting ${retryAfter} seconds...`);
           await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
           continue;
         }
 
-        if (error.code >= 500) {
+        if (errorCode && errorCode >= 500) {
           // Server error - retry with exponential backoff
           const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
           console.log(`Server error. Retrying in ${waitTime}ms...`);
@@ -147,7 +148,8 @@ export class CalendarClient {
       }
     }
 
-    throw new Error(`Failed after ${retries} attempts: ${lastError?.message || lastError}`);
+    const errorMessage = lastError instanceof Error ? lastError.message : String(lastError);
+    throw new Error(`Failed after ${retries} attempts: ${errorMessage}`);
   }
 
   /**

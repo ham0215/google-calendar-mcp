@@ -38,7 +38,7 @@ export class TokenManager {
       const data = await fs.readFile(this.tokenPath, 'utf8');
       return JSON.parse(data);
     } catch (error) {
-      if ((error as any).code === 'ENOENT') {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         return null;
       }
       throw error;
@@ -49,7 +49,7 @@ export class TokenManager {
     try {
       await fs.unlink(this.tokenPath);
     } catch (error) {
-      if ((error as any).code !== 'ENOENT') {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         throw error;
       }
     }
@@ -74,7 +74,7 @@ export class TokenManager {
         const updatedTokens: TokenData = {
           ...tokens,
           ...refreshedTokens,
-          refresh_token: refreshedTokens.refresh_token || tokens.refresh_token,
+          refresh_token: (refreshedTokens.refresh_token as string | undefined) || tokens.refresh_token,
         };
 
         await this.saveTokens(updatedTokens);
@@ -93,7 +93,7 @@ export class TokenManager {
     const existingTokens = await this.getValidTokens();
 
     if (existingTokens) {
-      this.oauthManager.setCredentials(existingTokens);
+      this.oauthManager.setCredentials(existingTokens as unknown as Record<string, unknown>);
       return existingTokens;
     }
 
@@ -109,14 +109,15 @@ export class TokenManager {
     console.log('Authorization code received. Exchanging for tokens...');
 
     const tokens = await this.oauthManager.getTokensFromCode(authCode);
-    await this.saveTokens(tokens);
+    const tokenData = tokens as unknown as TokenData;
+    await this.saveTokens(tokenData);
 
     console.log('Authentication successful! Tokens saved.');
-    return tokens;
+    return tokenData;
   }
 
   async ensureAuthenticated(): Promise<void> {
     const tokens = await this.authenticate();
-    this.oauthManager.setCredentials(tokens);
+    this.oauthManager.setCredentials(tokens as unknown as Record<string, unknown>);
   }
 }
