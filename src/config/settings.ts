@@ -60,7 +60,7 @@ export function getConfig(): AppConfig {
     filter: {
       minAttendees: parseInt(process.env.MIN_ATTENDEES || '2', 10),
       excludeKeywords: process.env.EXCLUDE_KEYWORDS
-        ? process.env.EXCLUDE_KEYWORDS.split(',').map(k => k.trim())
+        ? process.env.EXCLUDE_KEYWORDS.split(',').map((k) => k.trim())
         : [
             'out of office',
             'ooo',

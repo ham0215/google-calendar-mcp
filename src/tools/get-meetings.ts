@@ -46,10 +46,7 @@ async function getCalendarClient(): Promise<CalendarClient> {
       scopes: config.google.scopes,
     });
 
-    const tokenManager = new TokenManager(
-      config.storage.tokenPath,
-      oauthManager
-    );
+    const tokenManager = new TokenManager(config.storage.tokenPath, oauthManager);
 
     calendarClient = new CalendarClient({
       tokenManager,
@@ -73,21 +70,23 @@ function formatEventToMeeting(event: CalendarEvent): MeetingInfo {
   const endDate = new Date(endTime);
   const duration = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60)); // in minutes
 
-  const userAttendee = event.attendees?.find(attendee => attendee.self === true);
+  const userAttendee = event.attendees?.find((attendee) => attendee.self === true);
   const isOrganizer = event.organizer?.self === true;
-  const isAccepted = isOrganizer ||
+  const isAccepted =
+    isOrganizer ||
     userAttendee?.responseStatus === 'accepted' ||
     userAttendee?.responseStatus === 'tentative';
 
-  const attendees = event.attendees?.map(attendee => ({
-    email: attendee.email || '',
-    name: attendee.displayName || undefined,
-    responseStatus: attendee.responseStatus || undefined,
-    isOrganizer: attendee.organizer === true,
-  })) || [];
+  const attendees =
+    event.attendees?.map((attendee) => ({
+      email: attendee.email || '',
+      name: attendee.displayName || undefined,
+      responseStatus: attendee.responseStatus || undefined,
+      isOrganizer: attendee.organizer === true,
+    })) || [];
 
   // Add organizer if not in attendees list
-  if (event.organizer && !attendees.find(a => a.email === event.organizer?.email)) {
+  if (event.organizer && !attendees.find((a) => a.email === event.organizer?.email)) {
     attendees.unshift({
       email: event.organizer.email || '',
       name: event.organizer.displayName || undefined,
@@ -102,7 +101,7 @@ function formatEventToMeeting(event: CalendarEvent): MeetingInfo {
     meetingLink = event.hangoutLink;
   } else if (event.conferenceData?.entryPoints) {
     const videoEntry = event.conferenceData.entryPoints.find(
-      entry => entry.entryPointType === 'video'
+      (entry) => entry.entryPointType === 'video'
     );
     meetingLink = videoEntry?.uri || undefined;
   }
@@ -156,9 +155,7 @@ export async function getTodayMeetings(params: GetTodayMeetingsParams = {}): Pro
     const meetings = filteredEvents.map(formatEventToMeeting);
 
     // Sort by start time
-    meetings.sort((a, b) =>
-      new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-    );
+    meetings.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
 
     return {
       meetings,
@@ -166,7 +163,7 @@ export async function getTodayMeetings(params: GetTodayMeetingsParams = {}): Pro
       date: new Date().toISOString().split('T')[0],
     };
   } catch (error) {
-    console.error('Error fetching today\'s meetings:', error);
+    console.error("Error fetching today's meetings:", error);
     throw new Error(`Failed to fetch meetings: ${error}`);
   }
 }
@@ -177,7 +174,7 @@ export async function getTodayMeetings(params: GetTodayMeetingsParams = {}): Pro
 export function getTodayMeetingsTool() {
   return {
     name: 'getTodayMeetings',
-    description: 'Get today\'s meetings from Google Calendar with intelligent filtering',
+    description: "Get today's meetings from Google Calendar with intelligent filtering",
     inputSchema: {
       type: 'object',
       properties: {
