@@ -1,4 +1,3 @@
-import { ToolSchema } from '@modelcontextprotocol/sdk/types.js';
 import { CalendarClient, CalendarEvent } from '../calendar/client.js';
 import { createMeetingFilter, FilterConfig } from '../calendar/filters.js';
 import { OAuthManager } from '../auth/oauth.js';

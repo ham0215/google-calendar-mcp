@@ -57,7 +57,7 @@ export class OAuthManager {
       scope: this.config.scopes,
       state: this.state,
       code_challenge: challenge,
-      code_challenge_method: 'S256',
+      code_challenge_method: 'S256' as any,
       prompt: 'consent',
     });
 
