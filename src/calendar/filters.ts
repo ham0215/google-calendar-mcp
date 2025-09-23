@@ -36,10 +36,11 @@ export class EventFilter {
     }
 
     // Check the user's response status in attendees
-    const userAttendee = event.attendees?.find(attendee => attendee.self === true);
+    const userAttendee = event.attendees?.find((attendee) => attendee.self === true);
     if (userAttendee) {
-      return userAttendee.responseStatus === 'accepted' ||
-             userAttendee.responseStatus === 'tentative';
+      return (
+        userAttendee.responseStatus === 'accepted' || userAttendee.responseStatus === 'tentative'
+      );
     }
 
     // If we can't determine the status, include the event
@@ -58,7 +59,7 @@ export class EventFilter {
 
     // Include the organizer in the count if they're not in the attendees list
     const organizerInAttendees = event.attendees?.some(
-      attendee => attendee.email === event.organizer?.email
+      (attendee) => attendee.email === event.organizer?.email
     );
 
     const totalParticipants = organizerInAttendees
@@ -76,12 +77,9 @@ export class EventFilter {
       return false;
     }
 
-    const textToCheck = [
-      event.summary || '',
-      event.description || '',
-    ].join(' ').toLowerCase();
+    const textToCheck = [event.summary || '', event.description || ''].join(' ').toLowerCase();
 
-    return this.config.excludeKeywords.some(keyword =>
+    return this.config.excludeKeywords.some((keyword) =>
       textToCheck.includes(keyword.toLowerCase())
     );
   }
@@ -108,7 +106,7 @@ export class EventFilter {
     }
 
     // Check if the user has declined
-    const userAttendee = event.attendees?.find(attendee => attendee.self === true);
+    const userAttendee = event.attendees?.find((attendee) => attendee.self === true);
     return userAttendee?.responseStatus === 'declined';
   }
 
@@ -153,7 +151,7 @@ export class EventFilter {
    * Apply filters to an array of events
    */
   filterEvents(events: CalendarEvent[]): CalendarEvent[] {
-    return events.filter(event => this.filterEvent(event));
+    return events.filter((event) => this.filterEvent(event));
   }
 
   /**

@@ -1,4 +1,4 @@
-import { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client, CodeChallengeMethod } from 'google-auth-library';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { URL } from 'url';
 import crypto from 'crypto';
@@ -35,10 +35,7 @@ export class OAuthManager {
 
   private generatePKCE(): { verifier: string; challenge: string } {
     const verifier = crypto.randomBytes(32).toString('base64url');
-    const challenge = crypto
-      .createHash('sha256')
-      .update(verifier)
-      .digest('base64url');
+    const challenge = crypto.createHash('sha256').update(verifier).digest('base64url');
 
     return { verifier, challenge };
   }
@@ -57,7 +54,7 @@ export class OAuthManager {
       scope: this.config.scopes,
       state: this.state,
       code_challenge: challenge,
-      code_challenge_method: 'S256',
+      code_challenge_method: CodeChallengeMethod.S256,
       prompt: 'consent',
     });
 

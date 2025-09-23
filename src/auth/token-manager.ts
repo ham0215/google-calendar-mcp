@@ -30,11 +30,7 @@ export class TokenManager {
 
   async saveTokens(tokens: TokenData): Promise<void> {
     await this.ensureDirectory();
-    await fs.writeFile(
-      this.tokenPath,
-      JSON.stringify(tokens, null, 2),
-      'utf8'
-    );
+    await fs.writeFile(this.tokenPath, JSON.stringify(tokens, null, 2), 'utf8');
   }
 
   async loadTokens(): Promise<TokenData | null> {
@@ -73,9 +69,7 @@ export class TokenManager {
       }
 
       try {
-        const refreshedTokens = await this.oauthManager.refreshAccessToken(
-          tokens.refresh_token
-        );
+        const refreshedTokens = await this.oauthManager.refreshAccessToken(tokens.refresh_token);
 
         const updatedTokens: TokenData = {
           ...tokens,

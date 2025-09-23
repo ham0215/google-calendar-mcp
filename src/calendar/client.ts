@@ -102,10 +102,7 @@ export class CalendarClient {
   /**
    * Generic API request wrapper with error handling and retry logic
    */
-  private async makeApiRequest<T>(
-    requestFn: () => Promise<T>,
-    retries = 3
-  ): Promise<T> {
+  private async makeApiRequest<T>(requestFn: () => Promise<T>, retries = 3): Promise<T> {
     await this.ensureInitialized();
 
     let lastError: any;
@@ -131,9 +128,9 @@ export class CalendarClient {
 
         if (error.code === 429) {
           // Rate limit exceeded - wait and retry
-          const retryAfter = error.response?.headers?.['retry-after'] || (attempt * 2);
+          const retryAfter = error.response?.headers?.['retry-after'] || attempt * 2;
           console.log(`Rate limit exceeded. Waiting ${retryAfter} seconds...`);
-          await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+          await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
           continue;
         }
 
@@ -141,7 +138,7 @@ export class CalendarClient {
           // Server error - retry with exponential backoff
           const waitTime = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
           console.log(`Server error. Retrying in ${waitTime}ms...`);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
           continue;
         }
 
@@ -248,10 +245,7 @@ export class CalendarClient {
   /**
    * Get upcoming events
    */
-  async getUpcomingEvents(
-    maxResults = 10,
-    timeZone = 'UTC'
-  ): Promise<CalendarEvent[]> {
+  async getUpcomingEvents(maxResults = 10, timeZone = 'UTC'): Promise<CalendarEvent[]> {
     const now = new Date();
 
     const { events } = await this.listEvents({
