@@ -3,16 +3,15 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
-  ToolSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { getTodayMeetingsTool } from './tools/get-meetings.js';
+import { getTodayMeetingsTool, executeTodayMeetingsTool } from './tools/get-meetings.js';
 import { config } from 'dotenv';
 
 config();
 
 class GoogleCalendarMCPServer {
   private server: Server;
-  private tools: Map<string, ToolSchema>;
+  private tools: Map<string, any>;
 
   constructor() {
     this.server = new Server({
@@ -52,18 +51,9 @@ class GoogleCalendarMCPServer {
         }
 
         if (name === 'getTodayMeetings') {
-          const { includeDeclined = false, timezone = 'UTC' } = args as any;
-
+          const result = await executeTodayMeetingsTool(args || {});
           return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify({
-                  message: 'Tool implementation in progress',
-                  params: { includeDeclined, timezone },
-                }, null, 2),
-              },
-            ],
+            content: [result],
           };
         }
 

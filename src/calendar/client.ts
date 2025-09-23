@@ -1,5 +1,4 @@
 import { google, calendar_v3 } from 'googleapis';
-import { OAuth2Client } from 'google-auth-library';
 import { OAuthManager } from '../auth/oauth.js';
 import { TokenManager } from '../auth/token-manager.js';
 
