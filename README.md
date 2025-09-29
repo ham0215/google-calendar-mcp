@@ -314,7 +314,7 @@ npm run check
 npm run clean
 
 # 認証のセットアップ
-npm run setup  # または npm run auth
+npm run auth
 ```
 
 ### プロジェクト構成
