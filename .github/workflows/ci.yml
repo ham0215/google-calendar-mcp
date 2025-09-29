@@ -100,6 +100,31 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+  # フォーマットチェックジョブ
+  format:
+    name: Check Code Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read Node.js version from mise.toml
+        id: mise-version
+        run: |
+          NODE_VERSION=$(grep 'node = ' mise.toml | sed 's/node = "\(.*\)"/\1/')
+          echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+          echo "Using Node.js version: $NODE_VERSION"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.mise-version.outputs.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Check code formatting
         run: npm run format:check
 
