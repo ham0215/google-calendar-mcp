@@ -4,13 +4,7 @@ import 'dotenv/config';
 import { OAuthManager } from './oauth.js';
 import { TokenManager } from './token-manager.js';
 import { getConfig } from '../config/settings.js';
-import { promises as fs } from 'fs';
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
 import readline from 'readline/promises';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 async function setup(): Promise<void> {
   console.log('🔐 Google Calendar MCP - Authentication Setup\n');
@@ -24,7 +18,7 @@ async function setup(): Promise<void> {
     let config;
     try {
       config = getConfig();
-    } catch (error) {
+    } catch {
       console.error('❌ Missing OAuth credentials!');
       console.log('\nPlease set the following environment variables:');
       console.log('  - GOOGLE_CLIENT_ID');
