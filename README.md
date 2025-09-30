@@ -127,7 +127,7 @@ npm run start
 ### 認証手順
 
 ```bash
-npm run setup  # または npm run auth
+npm run auth
 ```
 
 実行すると:
