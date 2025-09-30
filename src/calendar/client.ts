@@ -123,8 +123,20 @@ export class CalendarClient {
         }
 
         if (errorCode === 403) {
-          // Permission denied
-          throw new Error('Permission denied. Please check your Google Calendar permissions.');
+          // Permission denied - include detailed error information
+          const errorDetails = JSON.stringify(
+            {
+              code: errorCode,
+              message: lastError.message,
+              details: error,
+            },
+            null,
+            2
+          );
+          console.error('403 Permission denied details:', errorDetails);
+          throw new Error(
+            `Permission denied. Please check your Google Calendar permissions. Details: ${errorDetails}`
+          );
         }
 
         if (errorCode === 429) {
