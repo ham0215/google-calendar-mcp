@@ -235,4 +235,3 @@ export function createMeetingFilter(customConfig?: Partial<FilterConfig>): Event
     ...customConfig,
   });
 }
-
