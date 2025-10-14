@@ -244,7 +244,7 @@ export function getTodayMeetingsTool() {
     name: 'getTodayMeetings',
     description: "Get today's meetings from Google Calendar with intelligent filtering",
     inputSchema: {
-      type: 'object',
+      type: 'object' as const,
       properties: {
         timezone: {
           type: 'string',
@@ -283,7 +283,7 @@ export function getMeetingsTool() {
     name: 'getMeetings',
     description: 'Get meetings for a specific date from Google Calendar with intelligent filtering',
     inputSchema: {
-      type: 'object',
+      type: 'object' as const,
       properties: {
         date: {
           type: 'string',
