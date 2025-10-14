@@ -8,7 +8,7 @@ export interface FilterConfig {
   excludeAllDayEvents?: boolean;
 }
 
-export class EventFilter {
+class EventFilter {
   private config: FilterConfig;
 
   constructor(config: FilterConfig = {}) {
@@ -233,23 +233,5 @@ export function createMeetingFilter(customConfig?: Partial<FilterConfig>): Event
   return new EventFilter({
     ...defaultMeetingConfig,
     ...customConfig,
-  });
-}
-
-/**
- * Filter and sort events for meeting relevance
- */
-export function filterAndSortMeetings(
-  events: CalendarEvent[],
-  filterConfig?: Partial<FilterConfig>
-): CalendarEvent[] {
-  const filter = createMeetingFilter(filterConfig);
-  const filteredEvents = filter.filterEvents(events);
-
-  // Sort by start time
-  return filteredEvents.sort((a, b) => {
-    const aTime = new Date(a.start?.dateTime || a.start?.date || 0).getTime();
-    const bTime = new Date(b.start?.dateTime || b.start?.date || 0).getTime();
-    return aTime - bTime;
   });
 }
