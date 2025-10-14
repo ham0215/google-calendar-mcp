@@ -37,7 +37,7 @@ export class TokenManager {
   async loadTokens(): Promise<TokenData | null> {
     try {
       const data = await fs.readFile(this.tokenPath, 'utf8');
-      return JSON.parse(data);
+      return JSON.parse(data) as TokenData;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         return null;
