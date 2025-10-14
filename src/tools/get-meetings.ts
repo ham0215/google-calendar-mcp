@@ -169,6 +169,74 @@ export async function getTodayMeetings(params: GetTodayMeetingsParams = {}): Pro
 }
 
 /**
+ * Get meetings for a specific date with filtering
+ */
+export async function getMeetings(
+  date: string,
+  params: GetTodayMeetingsParams = {}
+): Promise<{
+  meetings: MeetingInfo[];
+  timezone: string;
+  date: string;
+}> {
+  const config = getValidatedConfig();
+  const timezone = params.timezone || config.calendar.defaultTimezone;
+
+  try {
+    const client = await getCalendarClient();
+
+    // Parse the date and get start/end of day
+    const targetDate = new Date(date);
+    if (isNaN(targetDate.getTime())) {
+      throw new Error(`Invalid date format: ${date}. Expected format: YYYY-MM-DD`);
+    }
+
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // Get events for the specified date
+    const events = await client.getAllEvents({
+      timeMin: startOfDay.toISOString(),
+      timeMax: endOfDay.toISOString(),
+      timeZone: timezone,
+      orderBy: 'startTime',
+      singleEvents: true,
+    });
+
+    // Create filter configuration
+    const filterConfig: FilterConfig = {
+      minAttendees: params.minAttendees ?? config.filter.minAttendees,
+      excludeKeywords: params.excludeKeywords ?? config.filter.excludeKeywords,
+      requireAccepted: !params.includeDeclined && config.filter.requireAccepted,
+      excludeDeclined: !params.includeDeclined && config.filter.excludeDeclined,
+      excludeAllDayEvents: config.filter.excludeAllDayEvents,
+    };
+
+    // Apply filters
+    const filter = createMeetingFilter(filterConfig);
+    const filteredEvents = filter.filterEvents(events);
+
+    // Format events to meeting info
+    const meetings = filteredEvents.map(formatEventToMeeting);
+
+    // Sort by start time
+    meetings.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+
+    return {
+      meetings,
+      timezone,
+      date: targetDate.toISOString().split('T')[0],
+    };
+  } catch (error) {
+    console.error(`Error fetching meetings for ${date}:`, error);
+    throw new Error(`Failed to fetch meetings: ${error}`);
+  }
+}
+
+/**
  * Tool schema definition for MCP
  */
 export function getTodayMeetingsTool() {
@@ -176,7 +244,7 @@ export function getTodayMeetingsTool() {
     name: 'getTodayMeetings',
     description: "Get today's meetings from Google Calendar with intelligent filtering",
     inputSchema: {
-      type: 'object',
+      type: 'object' as const,
       properties: {
         timezone: {
           type: 'string',
@@ -208,6 +276,49 @@ export function getTodayMeetingsTool() {
 }
 
 /**
+ * Tool schema definition for getMeetings
+ */
+export function getMeetingsTool() {
+  return {
+    name: 'getMeetings',
+    description: 'Get meetings for a specific date from Google Calendar with intelligent filtering',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        date: {
+          type: 'string',
+          description: 'Date in YYYY-MM-DD format (e.g., "2025-10-15")',
+        },
+        timezone: {
+          type: 'string',
+          description: 'Timezone for the calendar events (e.g., "America/New_York", "Asia/Tokyo")',
+          default: 'UTC',
+        },
+        includeDeclined: {
+          type: 'boolean',
+          description: 'Include meetings that you have declined',
+          default: false,
+        },
+        minAttendees: {
+          type: 'number',
+          description: 'Minimum number of attendees required for a meeting to be included',
+          default: 2,
+        },
+        excludeKeywords: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+          description: 'Keywords to exclude from meeting titles and descriptions',
+          default: [],
+        },
+      },
+      required: ['date'],
+    },
+  };
+}
+
+/**
  * Execute the getTodayMeetings tool
  */
 interface ToolArgs {
@@ -230,6 +341,47 @@ export async function executeTodayMeetingsTool(args: ToolArgs): Promise<{
     };
 
     const result = await getTodayMeetings(params);
+
+    return {
+      type: 'text',
+      text: JSON.stringify(result, null, 2),
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return {
+      type: 'text',
+      text: JSON.stringify(
+        {
+          error: true,
+          message: errorMessage,
+        },
+        null,
+        2
+      ),
+    };
+  }
+}
+
+/**
+ * Execute the getMeetings tool
+ */
+interface GetMeetingsArgs extends ToolArgs {
+  date: string;
+}
+
+export async function executeMeetingsTool(args: GetMeetingsArgs): Promise<{
+  type: string;
+  text: string;
+}> {
+  try {
+    const params: GetTodayMeetingsParams = {
+      timezone: args.timezone,
+      includeDeclined: args.includeDeclined,
+      minAttendees: args.minAttendees,
+      excludeKeywords: args.excludeKeywords,
+    };
+
+    const result = await getMeetings(args.date, params);
 
     return {
       type: 'text',

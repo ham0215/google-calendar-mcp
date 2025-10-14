@@ -1,14 +1,23 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { getTodayMeetingsTool, executeTodayMeetingsTool } from './tools/get-meetings.js';
+import {
+  ListToolsRequestSchema,
+  CallToolRequestSchema,
+  Tool,
+} from '@modelcontextprotocol/sdk/types.js';
+import {
+  getTodayMeetingsTool,
+  executeTodayMeetingsTool,
+  getMeetingsTool,
+  executeMeetingsTool,
+} from './tools/get-meetings.js';
 import { config } from 'dotenv';
 
 config();
 
 class GoogleCalendarMCPServer {
   private server: Server;
-  private tools: Map<string, any>;
+  private tools: Map<string, Tool>;
 
   constructor() {
     this.server = new Server(
@@ -31,6 +40,9 @@ class GoogleCalendarMCPServer {
   private registerTools(): void {
     const todayMeetingsTool = getTodayMeetingsTool();
     this.tools.set(todayMeetingsTool.name, todayMeetingsTool);
+
+    const meetingsTool = getMeetingsTool();
+    this.tools.set(meetingsTool.name, meetingsTool);
   }
 
   private setupHandlers(): void {
@@ -46,7 +58,16 @@ class GoogleCalendarMCPServer {
       }
 
       if (name === 'getTodayMeetings') {
-        const result = await executeTodayMeetingsTool(args || {});
+        const result = await executeTodayMeetingsTool((args as Record<string, unknown>) || {});
+        return {
+          content: [result],
+        };
+      }
+
+      if (name === 'getMeetings') {
+        const result = await executeMeetingsTool(
+          (args as Record<string, unknown> & { date: string }) || { date: '' }
+        );
         return {
           content: [result],
         };
