@@ -13,6 +13,7 @@
     "start:dev": "tsx src/index.ts",
     "auth": "tsx src/auth/setup.ts",
     "test": "vitest",
+    "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src/**/*.ts",

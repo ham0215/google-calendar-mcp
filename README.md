@@ -224,6 +224,24 @@ DEFAULT_TIMEZONE=Asia/Tokyo
 2人以上参加する会議だけを表示して
 ```
 
+### getMeetings
+
+指定した日付の会議をインテリジェントなフィルタリングで取得します。
+
+**パラメータ:**
+- `date` (文字列, 必須): 日付(YYYY-MM-DD形式、例: "2025-10-15")
+- `timezone` (文字列, オプション): タイムゾーン（デフォルト: "UTC"、日本の場合: "Asia/Tokyo"）
+- `includeDeclined` (真偽値, オプション): 欠席予定の会議を含める（デフォルト: false）
+- `minAttendees` (数値, オプション): 最小参加者数（デフォルト: 2）
+- `excludeKeywords` (文字列配列, オプション): タイトル/説明から除外するキーワード
+
+**使用例（Claude内）:**
+```
+2025年10月20日の会議を教えて
+来週月曜日の予定を確認して
+明日の会議で3人以上参加する予定を表示して
+```
+
 **レスポンス例:**
 ```json
 {
@@ -298,17 +316,44 @@ npm run dev
 # TypeScriptのビルド
 npm run build
 
+# ビルドディレクトリのクリーンとリビルド
+npm run rebuild
+
+# 本番環境での起動
+npm run start
+
+# 開発環境での起動（tsx使用）
+npm run start:dev
+
 # 型チェック
 npm run typecheck
 
 # リンターの実行
 npm run lint
 
+# リンターの実行（自動修正付き）
+npm run lint:fix
+
 # コードフォーマット
 npm run format
 
-# すべてのチェックを実行
+# コードフォーマットチェック
+npm run format:check
+
+# すべてのチェックを実行（型チェック + リンター）
 npm run check
+
+# テストの実行（watchモード）
+npm test
+
+# テストの実行（CI用、一度だけ実行）
+npm run test:run
+
+# テストのUI表示
+npm run test:ui
+
+# テストカバレッジ
+npm run test:coverage
 
 # ビルドディレクトリのクリーン
 npm run clean
@@ -332,7 +377,7 @@ google-calendar-mcp/
 │   ├── config/            # 設定管理
 │   │   └── settings.ts    # 環境設定
 │   ├── tools/             # MCPツール実装
-│   │   └── get-meetings.ts # getTodayMeetingsツール
+│   │   └── get-meetings.ts # getTodayMeetings/getMeetingsツール
 │   └── types/             # TypeScript型定義
 │       └── index.ts       # 共通型定義
 ├── dist/                  # コンパイル済みJavaScript
