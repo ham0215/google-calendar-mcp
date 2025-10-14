@@ -343,8 +343,11 @@ npm run format:check
 # すべてのチェックを実行（型チェック + リンター）
 npm run check
 
-# テストの実行
+# テストの実行（watchモード）
 npm test
+
+# テストの実行（CI用、一度だけ実行）
+npm run test:run
 
 # テストのUI表示
 npm run test:ui

@@ -12,9 +12,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **TypeScriptコードや関連するファイルを変更した場合**、プルリクエストを作成する前に以下のチェックを実行してください:
 
-1. **テストの実行**: `npm test`
+1. **テストの実行**: `npm run test:run`
    - すべてのユニットテストが通過することを確認
    - テストが失敗した場合は修正してから進める
+   - 注: `npm test`はwatchモードで動作するため、CI環境では`test:run`を使用
 
 2. **ビルドの実行**: `npm run build`
    - TypeScriptのコンパイルエラーがないことを確認
@@ -35,7 +36,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **推奨フロー**:
 ```bash
 # すべてのチェックを順番に実行
-npm run typecheck && npm run lint && npm run format && npm test && npm run build
+npm run typecheck && npm run lint && npm run format && npm run test:run && npm run build
 ```
 
 これらのチェックに失敗がある場合は、プルリクエストを作成せずに問題を修正してください。
