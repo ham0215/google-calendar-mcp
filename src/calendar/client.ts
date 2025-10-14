@@ -2,7 +2,7 @@ import { google, calendar_v3 } from 'googleapis';
 import { OAuthManager } from '../auth/oauth.js';
 import { TokenManager } from '../auth/token-manager.js';
 
-export interface CalendarClientConfig {
+interface CalendarClientConfig {
   tokenManager: TokenManager;
   oauthManager: OAuthManager;
 }
@@ -39,7 +39,7 @@ export interface CalendarEvent {
   status?: string | null;
 }
 
-export interface ListEventsOptions {
+interface ListEventsOptions {
   calendarId?: string;
   timeMin?: string;
   timeMax?: string;

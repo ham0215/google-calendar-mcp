@@ -4,14 +4,14 @@ import { OAuthManager } from '../auth/oauth.js';
 import { TokenManager } from '../auth/token-manager.js';
 import { getValidatedConfig } from '../config/settings.js';
 
-export interface GetTodayMeetingsParams {
+interface GetTodayMeetingsParams {
   timezone?: string;
   includeDeclined?: boolean;
   minAttendees?: number;
   excludeKeywords?: string[];
 }
 
-export interface MeetingInfo {
+interface MeetingInfo {
   id: string;
   title: string;
   startTime: string;
@@ -124,7 +124,7 @@ function formatEventToMeeting(event: CalendarEvent): MeetingInfo {
 /**
  * Get today's meetings with filtering
  */
-export async function getTodayMeetings(params: GetTodayMeetingsParams = {}): Promise<{
+async function getTodayMeetings(params: GetTodayMeetingsParams = {}): Promise<{
   meetings: MeetingInfo[];
   timezone: string;
   date: string;
@@ -171,7 +171,7 @@ export async function getTodayMeetings(params: GetTodayMeetingsParams = {}): Pro
 /**
  * Get meetings for a specific date with filtering
  */
-export async function getMeetings(
+async function getMeetings(
   date: string,
   params: GetTodayMeetingsParams = {}
 ): Promise<{

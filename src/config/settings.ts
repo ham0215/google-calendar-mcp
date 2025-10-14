@@ -85,7 +85,7 @@ export function getConfig(): AppConfig {
 /**
  * Validate configuration
  */
-export function validateConfig(config: AppConfig): void {
+function validateConfig(config: AppConfig): void {
   const errors: string[] = [];
 
   if (!config.google.clientId) {

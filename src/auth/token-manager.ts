@@ -3,7 +3,7 @@ import path from 'path';
 import { OAuthManager } from './oauth.js';
 import { Credentials } from 'google-auth-library';
 
-export interface TokenData extends Credentials {
+interface TokenData extends Credentials {
   access_token: string;
   refresh_token?: string;
   scope: string;
