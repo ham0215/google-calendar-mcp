@@ -172,8 +172,11 @@ export class OAuthManager {
     return this.oauth2Client;
   }
 
-  isTokenExpired(expiryDate: number): boolean {
-    return Date.now() >= expiryDate;
+  isTokenExpired(expiryDate: number, bufferSeconds: number = 300): boolean {
+    // Add a buffer (default 5 minutes) to refresh tokens before they actually expire
+    // This prevents API calls from failing due to token expiration
+    const bufferMs = bufferSeconds * 1000;
+    return Date.now() >= expiryDate - bufferMs;
   }
 
   stopAuthServer(): void {

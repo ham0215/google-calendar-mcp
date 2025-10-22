@@ -12,6 +12,7 @@
     "start": "node dist/index.js",
     "start:dev": "tsx src/index.ts",
     "auth": "tsx src/auth/setup.ts",
+    "auth:status": "tsx src/auth/token-status.ts",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",

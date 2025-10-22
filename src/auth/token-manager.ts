@@ -63,13 +63,29 @@ export class TokenManager {
       return null;
     }
 
+    // Check if token will expire soon (default: within 5 minutes)
     if (this.oauthManager.isTokenExpired(tokens.expiry_date)) {
       if (!tokens.refresh_token) {
+        console.error(
+          '[TokenManager] Access token expired and no refresh token available. Re-authentication required.'
+        );
         await this.deleteTokens();
         return null;
       }
 
       try {
+        const timeUntilExpiry = tokens.expiry_date - Date.now();
+        const isActuallyExpired = timeUntilExpiry <= 0;
+
+        if (isActuallyExpired) {
+          console.log('[TokenManager] Access token expired. Refreshing...');
+        } else {
+          const minutesLeft = Math.floor(timeUntilExpiry / 60000);
+          console.log(
+            `[TokenManager] Access token will expire in ${minutesLeft} minutes. Proactively refreshing...`
+          );
+        }
+
         const refreshedTokens = await this.oauthManager.refreshAccessToken(tokens.refresh_token);
 
         const updatedTokens: TokenData = {
@@ -82,9 +98,16 @@ export class TokenManager {
         };
 
         await this.saveTokens(updatedTokens);
+
+        const newExpiryDate = new Date(updatedTokens.expiry_date);
+        console.log(
+          `[TokenManager] Token refreshed successfully. New expiry: ${newExpiryDate.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}`
+        );
+
         return updatedTokens;
       } catch (error) {
-        console.error('Failed to refresh tokens:', error);
+        console.error('[TokenManager] Failed to refresh tokens:', error);
+        console.error('[TokenManager] Deleting invalid tokens. Re-authentication required.');
         await this.deleteTokens();
         return null;
       }
