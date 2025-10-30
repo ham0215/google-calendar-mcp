@@ -11,6 +11,10 @@ import {
   getMeetingsTool,
   executeMeetingsTool,
 } from './tools/get-meetings.js';
+import {
+  reAuthenticateTool,
+  executeReAuthenticateTool,
+} from './tools/re-authenticate.js';
 import { config } from 'dotenv';
 
 config();
@@ -43,6 +47,9 @@ class GoogleCalendarMCPServer {
 
     const meetingsTool = getMeetingsTool();
     this.tools.set(meetingsTool.name, meetingsTool);
+
+    const reAuthTool = reAuthenticateTool();
+    this.tools.set(reAuthTool.name, reAuthTool);
   }
 
   private setupHandlers(): void {
@@ -68,6 +75,13 @@ class GoogleCalendarMCPServer {
         const result = await executeMeetingsTool(
           (args as Record<string, unknown> & { date: string }) || { date: '' }
         );
+        return {
+          content: [result],
+        };
+      }
+
+      if (name === 'reAuthenticate') {
+        const result = await executeReAuthenticateTool();
         return {
           content: [result],
         };
