@@ -62,7 +62,7 @@ class GoogleCalendarMCPServer {
     this.server.setRequestHandler(ListPromptsRequestSchema, async () => ({
       prompts: [
         {
-          name: 're-authenticate',
+          name: 'Re-authenticate',
           description: 'Re-authenticate with Google Calendar API',
         },
       ],
@@ -71,14 +71,14 @@ class GoogleCalendarMCPServer {
     this.server.setRequestHandler(GetPromptRequestSchema, async (request) => {
       const { name } = request.params;
 
-      if (name === 're-authenticate') {
+      if (name === 'Re-authenticate') {
         return {
           messages: [
             {
               role: 'user',
               content: {
                 type: 'text',
-                text: 'Please execute the reAuthenticate tool to refresh my Google Calendar API credentials.',
+                text: 'Please execute the Re-authenticate tool to refresh my Google Calendar API credentials.',
               },
             },
           ],
@@ -111,7 +111,7 @@ class GoogleCalendarMCPServer {
         };
       }
 
-      if (name === 'reAuthenticate') {
+      if (name === 'Re-authenticate') {
         const result = await executeReAuthenticateTool();
         return {
           content: [result],

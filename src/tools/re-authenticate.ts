@@ -95,9 +95,9 @@ async function reAuthenticate(): Promise<ReAuthenticateResult> {
  */
 export function reAuthenticateTool() {
   return {
-    name: 'reAuthenticate',
+    name: 'Re-authenticate',
     description:
-      'Re-authenticate with Google Calendar API. This will open a browser window for OAuth authentication and save new credentials.',
+      'Re-authenticate with Google Calendar API',
     inputSchema: {
       type: 'object' as const,
       properties: {},
