@@ -3,6 +3,8 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import {
@@ -29,6 +31,7 @@ class GoogleCalendarMCPServer {
       {
         capabilities: {
           tools: {},
+          prompts: {},
         },
       }
     );
@@ -50,9 +53,40 @@ class GoogleCalendarMCPServer {
   }
 
   private setupHandlers(): void {
+    // Tools handlers
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: Array.from(this.tools.values()),
     }));
+
+    // Prompts handlers
+    this.server.setRequestHandler(ListPromptsRequestSchema, async () => ({
+      prompts: [
+        {
+          name: 're-authenticate',
+          description: 'Re-authenticate with Google Calendar API',
+        },
+      ],
+    }));
+
+    this.server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+      const { name } = request.params;
+
+      if (name === 're-authenticate') {
+        return {
+          messages: [
+            {
+              role: 'user',
+              content: {
+                type: 'text',
+                text: 'Please execute the reAuthenticate tool to refresh my Google Calendar API credentials.',
+              },
+            },
+          ],
+        };
+      }
+
+      throw new Error(`Prompt ${name} not found`);
+    });
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
