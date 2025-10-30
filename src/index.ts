@@ -11,10 +11,7 @@ import {
   getMeetingsTool,
   executeMeetingsTool,
 } from './tools/get-meetings.js';
-import {
-  reAuthenticateTool,
-  executeReAuthenticateTool,
-} from './tools/re-authenticate.js';
+import { reAuthenticateTool, executeReAuthenticateTool } from './tools/re-authenticate.js';
 import { config } from 'dotenv';
 
 config();
